@@ -1,51 +1,34 @@
-mov ah, 0x0e ; this is Teletype Output - basically moves the cursor one space
-mov al, 'H'
-; bios interupt 
-int 0x10
+[org 0x7c00]
+mov si, STR
 
-mov ah, 0x0e 
-mov al, 'E'
-int 0x10
+call print
 
-mov ah, 0x0e 
-mov al, 'L'
-int 0x10
-
-
-mov ah, 0x0e 
-mov al, 'L'
-int 0x10
-
-mov ah, 0x0e 
-mov al, 'O'
-int 0x10
-
-mov ah, 0x0e
-mov al, ' '
-int 0x10
-
-mov ah, 0x0e
-mov al, 'W'
-int 0x10
-
-mov ah, 0x0e
-mov al, 'O'
-int 0x10
-
-mov ah, 0x0e
-mov al, 'R'
-int 0x10
-
-mov ah, 0x0e
-mov al, 'L'
-int 0x10
-
-mov ah, 0x0e
-mov al, 'D'
-int 0x10
-
-
+; ------- hangs
 jmp $
 
+; --- print function
+print:
+  pusha
+  word_loop:
+  	mov al, [si]
+	cmp al, 0
+	jne print_char
+	popa
+	ret
+  
+  print_char:
+  	mov ah, 0x0e
+	int 0x10
+	add si, 1
+	jmp word_loop
+
+; ---- label for variable (kindof)
+
+STR: db "Hello World", 0
+
+;  -------padding
+
 times 510-($-$$) db 0
+
+; ------- magic number
 dw 0xaa55
